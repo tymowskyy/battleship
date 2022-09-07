@@ -15,6 +15,9 @@ class PlaceShipResponses(Enum):
     SUCCESS = 3
     SUCCESS_ALL_SHIPS_PLACED = 4
 
+    def is_success(self):
+        return self in [self.SUCCESS, self.SUCCESS_ALL_SHIPS_PLACED]
+
 class FireResponses(Enum):
     INVALID_POSITION = 1
     CAN_NOT_FIRE_YET = 2
@@ -23,6 +26,9 @@ class FireResponses(Enum):
     HIT = 5
     SUNK = 6
     WIN = 7
+
+    def is_success(self):
+        return self in [self.MISS, self.HIT, self.SUNK, self.WIN]
 
 class Game:
 

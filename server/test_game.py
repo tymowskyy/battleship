@@ -28,6 +28,9 @@ class TestGame(unittest.TestCase):
         g.fire(True, (0, 2))
         self.assertEqual(g.fire(False, (0, 2)), (FireResponses.WIN, 1))
 
+    def test_responses_success_check(self):
+        self.assertTrue(FireResponses.MISS.is_success())
+        self.assertFalse(PlaceShipResponses.SHIP_USED.is_success())
 
 if __name__ == '__main__':
     unittest.main()
