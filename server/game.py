@@ -91,7 +91,7 @@ class Game:
         return FireResponses.MISS, None
     
     def all_player_ships_sunk(self, player):
-        return all([s.is_sunk() for s in self.player_ships[not player]])
+        return all([s.is_sunk() for s in self.player_ships[player]])
 
 
 class Ship:
