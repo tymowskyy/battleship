@@ -14,18 +14,19 @@ class TestGame(unittest.TestCase):
 
     def test_fire_responses(self):
         g = Game(ships=[2, 1])
-        self.assertEqual(g.fire(False, (0, 0)), (FireResponses.CAN_NOT_FIRE_YET, None))
-        g.place_ship(False, 2, (0, 0), Orientation.HORIZONTAL)
-        g.place_ship(False, 1, (0, 2), Orientation.HORIZONTAL)
-        g.place_ship(True, 2, (3, 0), Orientation.HORIZONTAL)
-        g.place_ship(True, 1, (3, 2), Orientation.HORIZONTAL)
-        self.assertEqual(g.fire(False, (-1, 2)), (FireResponses.INVALID_POSITION, None))
-        self.assertEqual(g.fire(False, (0, 0)), (FireResponses.MISS, None))
-        self.assertEqual(g.fire(True, (0, 0)), (FireResponses.HIT, None))
-        g.fire(False, (0, 1))
-        self.assertEqual(g.fire(True, (1, 0)), (FireResponses.SUNK, 2))
-        g.fire(False, (0, 2))
-        self.assertEqual(g.fire(True, (0, 2)), (FireResponses.WIN, 1))
+        self.assertEqual(g.fire(True, (0, 0)), (FireResponses.CAN_NOT_FIRE_YET, None))
+        g.place_ship(True, 2, (0, 0), Orientation.HORIZONTAL)
+        g.place_ship(True, 1, (0, 2), Orientation.HORIZONTAL)
+        g.place_ship(False, 2, (3, 0), Orientation.HORIZONTAL)
+        g.place_ship(False, 1, (3, 2), Orientation.HORIZONTAL)
+        self.assertEqual(g.fire(False, (0, 0)), (FireResponses.ANOTHER_PLAYERS_ROUND, None))
+        self.assertEqual(g.fire(True, (-1, 2)), (FireResponses.INVALID_POSITION, None))
+        self.assertEqual(g.fire(True, (0, 0)), (FireResponses.MISS, None))
+        self.assertEqual(g.fire(False, (0, 0)), (FireResponses.HIT, None))
+        g.fire(True, (0, 1))
+        self.assertEqual(g.fire(False, (1, 0)), (FireResponses.SUNK, 2))
+        g.fire(True, (0, 2))
+        self.assertEqual(g.fire(False, (0, 2)), (FireResponses.WIN, 1))
 
 
 if __name__ == '__main__':

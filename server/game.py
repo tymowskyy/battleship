@@ -18,14 +18,16 @@ class PlaceShipResponses(Enum):
 class FireResponses(Enum):
     INVALID_POSITION = 1
     CAN_NOT_FIRE_YET = 2
-    MISS = 3
-    HIT = 4
-    SUNK = 5
-    WIN = 6
+    ANOTHER_PLAYERS_ROUND = 3
+    MISS = 4
+    HIT = 5
+    SUNK = 6
+    WIN = 7
 
 class Game:
 
     def __init__(self, board_size=10, ships=None):
+        self.current_player = True
         if ships is None:
             ships = [5, 4, 3, 3, 2]
         self.board_size = board_size
@@ -64,11 +66,16 @@ class Game:
 
 
     def fire(self, player, position):
+        if player != self.current_player:
+            return FireResponses.ANOTHER_PLAYERS_ROUND, None
+
         if not self.is_on_board(position):
             return FireResponses.INVALID_POSITION, None
 
         if self.ship_sizes_left[0] or self.ship_sizes_left[1]:
             return FireResponses.CAN_NOT_FIRE_YET, None
+
+        self.current_player = not self.current_player
 
         for ship in self.player_ships[not player]:
             if ship.colide(position):
