@@ -1,5 +1,5 @@
 import unittest
-from game import Game, Orientation, PlaceShipResponses, FireResponses
+from battleship.game import Game, Orientation, PlaceShipResponses, FireResponses
 
 class TestGame(unittest.TestCase):
     def test_place_ship_responses(self):
