@@ -13,7 +13,7 @@ class Lobby:
     
     def join_player(self, player):
         self.p2 = player
-
+        sio.emit('oponent_joined', {}, to=self.p1)
     
     def leave_player(self, player):
         if player == self.p1:
@@ -21,6 +21,7 @@ class Lobby:
                 return True
             self.p1 = self.p2
         self.p2 = None
+        sio.emit('end_game', {}, to=self.p1)
         return False
             
     @staticmethod

@@ -12,6 +12,16 @@ def connect():
 def disconnect():
     print('disconnected from server')
 
+@sio.event
+def oponent_joined(data):
+    print('Oponent joined lobby!')
+
+@sio.event
+def end_game(data):
+    print('Game ended')
+    print(f'Lobby ID: {current_lobby}')
+    
+
 def create_or_join_lobby(user_input):
     global after_input, current_lobby
 
