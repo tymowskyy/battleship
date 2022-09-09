@@ -18,7 +18,7 @@ def create_or_join_lobby(user_input):
     if user_input == '1':
         lobby_id = input('Input Lobby ID: ')
         response = sio.call('join_lobby', {'lobby_id': lobby_id})
-        if not response['success']:
+        if 'error' in response:
             print('ERROR', response['error'])
             print(CREATE_OR_JOIN_LOBBY_MESSAGE)
             return
@@ -29,7 +29,7 @@ def create_or_join_lobby(user_input):
 
     elif user_input == '2':
         response = sio.call('create_lobby', {})
-        if not response['success']:
+        if 'error' in  response:
             print('ERROR', response['error'])
             print(CREATE_OR_JOIN_LOBBY_MESSAGE)
             return
@@ -42,26 +42,30 @@ def create_or_join_lobby(user_input):
         print('Invalid input!')
         print(CREATE_OR_JOIN_LOBBY_MESSAGE)
 
-after_input = create_or_join_lobby
-current_lobby = None
-
 def main():
-    sio.connect('http://localhost:5000')
+    global after_input
 
+    sio.connect('http://localhost:5000')
+    print('Input "quit" to quit the game, "leave" to leave the lobby')
     print(CREATE_OR_JOIN_LOBBY_MESSAGE)
 
     run = True
     while run:
         user_input = input()
-        if user_input == 'quit':
+        if user_input == 'exit':
             run = False
             break
+        if user_input == 'leave':
+            sio.emit('leave_lobby', {})
+            after_input = create_or_join_lobby
+            print(CREATE_OR_JOIN_LOBBY_MESSAGE)
+            continue
         if not after_input is None:
             after_input(user_input)
-
-
     sio.disconnect()
 
+after_input = create_or_join_lobby
+current_lobby = None
 
 if __name__ == '__main__':
     main()
