@@ -14,13 +14,19 @@ def disconnect():
 
 @sio.event
 def oponent_joined(data):
+    global after_input
     print('Oponent joined lobby!')
+    print('Choose who to start:\n1 - You\n2 - Your oponent \nAnything else - Random')
+    after_input = start_game
 
 @sio.event
-def end_game(data):
-    print('Game ended')
+def oponent_left(data):
+    print('Oponent left lobby!')
     print(f'Lobby ID: {current_lobby}')
     
+@sio.event
+def game_started(data):
+    print('Game started!')
 
 def create_or_join_lobby(user_input):
     global after_input, current_lobby
@@ -51,6 +57,17 @@ def create_or_join_lobby(user_input):
     else:
         print('Invalid input!')
         print(CREATE_OR_JOIN_LOBBY_MESSAGE)
+
+def start_game(user_data):
+    global after_input
+
+    who_starts = 0
+    if user_data == '1':
+        who_starts = 1
+    elif user_data == '2':
+        who_starts = 2
+    after_input = None
+    sio.emit('start_game', {'who_starts': who_starts})
 
 def main():
     global after_input

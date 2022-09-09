@@ -46,3 +46,12 @@ def player_leave_lobby(sid):
             return
         lobbies[session['lobby_id']].leave_player(sid)
         del session['lobby_id']
+
+def get_lobby(sid):
+    with sio.session(sid) as session:
+        return lobbies[session['lobby_id']]
+
+@sio.event
+def start_game(sid, data):
+    lobby = get_lobby(sid)
+    lobby.start_game(data['who_starts'])

@@ -1,5 +1,6 @@
-from random import randint
+from random import randint, choice
 from battleship import sio
+from battleship.game import Game
 
 class Lobby:
     def __init__(self, player, id):
@@ -7,6 +8,7 @@ class Lobby:
         self.p1 = player
         self.p2 = None
         self.id = id
+        self.starting_player = None
 
     def is_full(self):
         return not self.p2 is None
@@ -21,11 +23,25 @@ class Lobby:
                 return True
             self.p1 = self.p2
         self.p2 = None
-        sio.emit('end_game', {}, to=self.p1)
+        self.game = None
+        self.starting_player = None
+        sio.emit('oponent_left', {}, to=self.p1)
         return False
             
+    def start_game(self, who_starts):
+        if who_starts == 0:
+            self.starting_player = choice(self.p1, self.p2)
+        elif who_starts == 1:
+            self.starting_player = self.p1
+        else:
+            self.starting_player = self.p2
+
+        self.game = Game()
+        for player in (self.p1, self.p2):
+            sio.emit('game_started', {}, to=player)
+
     @staticmethod
-    def generate_unique_lobby_id(used_ids, lenght = 6):
+    def generate_unique_lobby_id(used_ids, lenght = 4):
         generate_lobby_id = lambda : ''.join([str(randint(0, 9)) for _ in range(lenght)])
         lobby_id = generate_lobby_id()
         while lobby_id in used_ids:
