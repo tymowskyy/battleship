@@ -6,10 +6,10 @@ class TestGame(unittest.TestCase):
         g = Game(ships=[2, 3])
         self.assertEqual(g.place_ship(False, 2, (3, 3), Orientation.VERTICAL), PlaceShipResponses.SUCCESS)
         self.assertEqual(g.place_ship(False, 2, (3, 3), Orientation.VERTICAL), PlaceShipResponses.SHIP_USED)
-        self.assertEqual(g.place_ship(False, 3, (2, 4), Orientation.HORIZONTAL), PlaceShipResponses.INVALID_POSITION)
+        self.assertEqual(g.place_ship(False, 3, (0, 3), Orientation.HORIZONTAL), PlaceShipResponses.INVALID_POSITION)
         self.assertEqual(g.place_ship(True, 2, (9, 9), Orientation.VERTICAL), PlaceShipResponses.INVALID_POSITION)
         g.place_ship(True, 2, (0, 0), Orientation.VERTICAL)
-        g.place_ship(True, 3, (1, 0), Orientation.VERTICAL)
+        g.place_ship(True, 3, (2, 0), Orientation.VERTICAL)
         self.assertEqual(g.place_ship(False, 3, (5, 5), Orientation.HORIZONTAL), PlaceShipResponses.SUCCESS_ALL_SHIPS_PLACED)
 
     def test_fire_responses(self):

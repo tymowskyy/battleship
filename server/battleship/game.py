@@ -57,7 +57,9 @@ class Game:
         ship_end_position = ship_orientation.translate(ship_position, ship_size)
         if not self.is_on_board(ship_end_position):
             return PlaceShipResponses.INVALID_POSITION
-        for x, y in get_tiles_between(ship_position, ship_end_position):
+        for x, y in get_tiles_between((ship_position[0] - 1, ship_position[1] - 1), (ship_end_position[0] + 1, ship_end_position[1] + 1)):
+            if not self.is_on_board((x, y)):
+                continue
             for ship in self.player_ships[player]:
                 if ship.colide((x, y)):
                     return PlaceShipResponses.INVALID_POSITION
