@@ -74,11 +74,11 @@ class Game:
 
     def fire(self, player, position):
         if player != self.current_player:
-            return FireResponses.ANOTHER_PLAYERS_ROUND, None
+            return FireResponses.ANOTHER_PLAYERS_ROUND
         if not self.is_on_board(position):
-            return FireResponses.INVALID_POSITION, None
+            return FireResponses.INVALID_POSITION
         if self.ship_sizes_left[0] or self.ship_sizes_left[1]:
-            return FireResponses.CAN_NOT_FIRE_YET, None
+            return FireResponses.CAN_NOT_FIRE_YET
 
         self.current_player = not self.current_player
 
@@ -87,10 +87,10 @@ class Game:
                 sunk = ship.hit(position)
                 if sunk:
                     if self.all_player_ships_sunk(not player):
-                        return FireResponses.WIN, ship.size
-                    return FireResponses.SUNK, ship.size
-                return FireResponses.HIT, None
-        return FireResponses.MISS, None
+                        return FireResponses.WIN
+                    return FireResponses.SUNK
+                return FireResponses.HIT
+        return FireResponses.MISS
     
     def all_player_ships_sunk(self, player):
         return all([s.is_sunk() for s in self.player_ships[player]])
