@@ -1,6 +1,6 @@
 from random import randint, choice
 from battleship import sio
-from battleship.game import Game
+from battleship.game import Game, PlaceShipResponses
 
 class Lobby:
     def __init__(self, player, id):
@@ -39,6 +39,10 @@ class Lobby:
         self.game = Game()
         for player in (self.p1, self.p2):
             sio.emit('game_started', {}, to=player)
+
+    def place_ship(self, player, pos, size, orientation):
+        result = self.game.place_ship(player==self.starting_player, size, pos, orientation)
+        return {'success': result.is_success()}
 
     @staticmethod
     def generate_unique_lobby_id(used_ids, lenght = 4):

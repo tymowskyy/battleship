@@ -1,5 +1,6 @@
 from battleship import sio, lobbies
 from battleship.lobby import Lobby
+from battleship.game import Orientation
 
 @sio.event
 def connect(sid, environ):
@@ -55,3 +56,11 @@ def get_lobby(sid):
 def start_game(sid, data):
     lobby = get_lobby(sid)
     lobby.start_game(data['who_starts'])
+
+@sio.event
+def place_ship(sid, data):
+    pos = (data['x'], data['y'])
+    size = data['size']
+    orientation = Orientation(data['orientation'])
+    with sio.session(sid) as session:
+        return lobbies[session['lobby_id']].place_ship(sid, pos, size, orientation)
