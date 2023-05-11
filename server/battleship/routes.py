@@ -64,3 +64,9 @@ def place_ship(sid, data):
     orientation = Orientation(data['orientation'])
     with sio.session(sid) as session:
         return lobbies[session['lobby_id']].place_ship(sid, pos, size, orientation)
+    
+@sio.event
+def fire(sid, data):
+    pos = (data['x'], data['y'])
+    with sio.session(sid) as session:
+        return lobbies[session['lobby_id']].fire(sid, pos)

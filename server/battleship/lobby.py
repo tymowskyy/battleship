@@ -1,8 +1,11 @@
 from random import randint, choice
 from battleship import sio
-from battleship.game import Game, PlaceShipResponses
+from battleship.game import FireResponses, Game, Orientation, PlaceShipResponses
 
 class Lobby:
+
+    get_other_player = lambda self, p: self.p1 if p == self.p2 else self.p2
+
     def __init__(self, player, id):
         self.game = None
         self.p1 = player
@@ -42,7 +45,26 @@ class Lobby:
 
     def place_ship(self, player, pos, size, orientation):
         result = self.game.place_ship(player==self.starting_player, size, pos, orientation)
+        if result == PlaceShipResponses.SUCCESS_ALL_SHIPS_PLACED:
+            if player != self.starting_player:
+                sio.emit('can_fire', {}, to=self.starting_player)
+            else:
+                return {'success': True, 'can_fire': True}
         return {'success': result.is_success()}
+
+    def fire(self, player, pos):
+        result = self.game.fire(player==self.starting_player, pos)
+        win = result == FireResponses.WIN
+        enemy = self.get_other_player(player)
+        if result.is_success():
+            if win:
+                sio.emit('enemy_fired', {'winner': False, 'pos': pos, 'result': result.name}, to=enemy)
+                return {'winner': True, 'result': result.name}
+            sio.emit('enemy_fired', {'pos': pos, 'result': result.name}, to=enemy)
+            sio.emit('can_fire', {}, to=enemy)
+            return {'success': True, 'result': result.name}
+        return {'success': False, 'result': result.name}
+
 
     @staticmethod
     def generate_unique_lobby_id(used_ids, lenght = 4):

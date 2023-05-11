@@ -3,6 +3,7 @@ import socketio
 sio = socketio.Client()
 
 CREATE_OR_JOIN_LOBBY_MESSAGE = '1 - Join Lobby\n2 - Create Lobby'
+FIRE_MESSAGE = 'Input position to FIRE!: '
 SHIPS = [5, 4, 3, 3, 2]
 ships_to_place = None
 
@@ -33,6 +34,22 @@ def game_started(data):
     ships_to_place = SHIPS.copy()
     print(get_place_ship_message())
     after_input = place_ship
+
+@sio.event
+def enemy_fired(data):
+    print(data)
+    if 'winner' in data:
+        on_end_game(data['winner'])
+
+@sio.event
+def can_fire(data):
+    global after_input
+    print(FIRE_MESSAGE)
+    after_input = fire
+
+@sio.event
+def end_game(data):
+    on_end_game(data['winner'])
 
 def create_or_join_lobby(user_input):
     global after_input, current_lobby
@@ -93,16 +110,55 @@ def place_ship(user_data):
         print('Should be one char for column (a-j), one char for row (0-9), and one char for orientation (h/v)')
         print(get_place_ship_message())
         return
+    result = sio.call('place_ship', {'x': x, 'y': y, 'orientation': orientation, 'size': ships_to_place[0]})
+    print(result)
+    if not result['success']:
+        print(get_place_ship_message())
+        return
+
+    ships_to_place.pop(0)
+    if ships_to_place:
+        print(get_place_ship_message())
+        return
+    print('All ships placed!')
+    if 'can_fire' in result:
+        print(FIRE_MESSAGE)
+        after_input = fire
     else:
-        result = sio.call('place_ship', {'x': x, 'y': y, 'orientation': orientation, 'size': ships_to_place[0]})
-        print(result)
-        if result['success']:
-            ships_to_place.pop(0)
-            if not ships_to_place:
-                print('All ships placed!')
-                after_input = None
-                return
-    print(get_place_ship_message())
+        after_input = None
+
+def fire(user_data):
+    global after_input
+    try:
+        if len(user_data) != 2:
+            raise ValueError()
+        x = int(ord(user_data[0]) - ord('a'))
+        y = int(user_data[1])
+    except:
+        print('Invalid format of position!')
+        print('Should be one char for column (a-j), one char for row (0-9)')
+        print(FIRE_MESSAGE)
+        return
+    
+    result = sio.call('fire', {'x': x, 'y': y})
+    print(result)
+    if result['success']:
+        after_input = None
+
+    if 'winner' in result:
+        on_end_game(result['winner'])
+    
+def on_end_game(won):
+    global after_input
+
+    if won:
+        print('YOU WON!')
+    else:
+        print('YOU LOST!')
+    
+    print(CREATE_OR_JOIN_LOBBY_MESSAGE)
+    after_input = create_or_join_lobby
+    
 
 def main():
     global after_input
