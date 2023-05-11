@@ -59,7 +59,7 @@ class Lobby:
         if result.is_success():
             if win:
                 sio.emit('enemy_fired', {'winner': False, 'pos': pos, 'result': result.name}, to=enemy)
-                return {'winner': True, 'result': result.name}
+                return {'winner': True, 'result': result.name, 'success': True}
             sio.emit('enemy_fired', {'pos': pos, 'result': result.name}, to=enemy)
             sio.emit('can_fire', {}, to=enemy)
             return {'success': True, 'result': result.name}

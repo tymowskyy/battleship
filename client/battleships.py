@@ -102,12 +102,12 @@ def place_ship(user_data):
     try:
         if len(user_data) != 3 or not user_data[2] in ('v', 'h'):
             raise ValueError()
-        x = int(ord(user_data[0]) - ord('a'))
-        y = int(user_data[1])
+        x = int(user_data[1])
+        y = int(ord(user_data[0]) - ord('a'))
         orientation = user_data[2] == 'v'
     except:
         print('Invalid format of position!')
-        print('Should be one char for column (a-j), one char for row (0-9), and one char for orientation (h/v)')
+        print('Should be one char for row (a-j), one char for column (0-9), and one char for orientation (h/v)')
         print(get_place_ship_message())
         return
     result = sio.call('place_ship', {'x': x, 'y': y, 'orientation': orientation, 'size': ships_to_place[0]})
@@ -132,11 +132,11 @@ def fire(user_data):
     try:
         if len(user_data) != 2:
             raise ValueError()
-        x = int(ord(user_data[0]) - ord('a'))
-        y = int(user_data[1])
+        x = int(user_data[1])
+        y = int(ord(user_data[0]) - ord('a'))
     except:
         print('Invalid format of position!')
-        print('Should be one char for column (a-j), one char for row (0-9)')
+        print('Should be one char for row (a-j), one char for column (0-9)')
         print(FIRE_MESSAGE)
         return
     
